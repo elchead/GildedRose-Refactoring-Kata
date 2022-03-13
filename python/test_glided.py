@@ -26,4 +26,48 @@ def test_lower_quality():
 
 
 def test_lower_sellin():
-    pass
+    sellin = 1
+    sellin_2 = -1
+    items = [Item("item", sellin, 1), Item("item", sellin_2, 10)]
+
+    create_and_update(items)
+    assert items[0].sell_in == sellin - 1
+    assert items[1].sell_in == sellin_2 - 1
+
+
+def get_new_quality_with_name(name, old_quality, sellin):
+    items = [Item(name, sellin, old_quality)]
+    create_and_update(items)
+    return items[0].quality
+
+
+def get_new_quality(old_quality, sellin):
+    return get_new_quality_with_name("item", old_quality, sellin)
+
+
+class TestDegradeTwiceAsFast:
+    def test_happy_path(self):
+        quality = 10
+        assert get_new_quality(quality, 0) == quality - 2
+
+    def test_negative_sellin(self):
+        quality = 10
+        assert get_new_quality(quality, -2) == quality - 2
+
+    def test_quality_never_negative(self):
+        quality = 1
+        assert get_new_quality(quality, 0) == 0
+
+    def test_brie_increases(self):
+        quality = 10
+        assert get_new_quality_with_name("Aged Brie", quality, -1) == quality + 2
+
+
+def test_brie_increases_value():
+    quality = 10
+    assert get_new_quality_with_name("Aged Brie", quality, 2) == quality + 1
+
+
+def test_brie_never_beyond_50():
+    quality = 50
+    assert get_new_quality_with_name("Aged Brie", quality, 2) == quality
