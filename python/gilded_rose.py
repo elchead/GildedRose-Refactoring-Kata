@@ -48,6 +48,16 @@ class BackstagePasses:
             quality_inc = -self.item.quality
         _base_update(self.item, quality_inc)
 
+class Conjured:
+    def __init__(self, item: Item):
+        self.item = item
+
+    def update_quality(self):
+        quality_inc = -2
+        if self.item.sell_in <= 0:
+            quality_inc = -4
+        _base_update(self.item, quality_inc)
+
 
 class OtherItems:
     def __init__(self, item: Item):
@@ -67,6 +77,8 @@ def create_smart_item(item: Item):
         return AgedBrie(item)
     elif item.name == "Backstage passes to a TAFKAL80ETC concert":
         return BackstagePasses(item)
+    elif item.name == "Conjured":
+        return Conjured(item)
     else:
         return OtherItems(item)
 

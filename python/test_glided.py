@@ -61,6 +61,10 @@ class TestDegradeTwiceAsFast:
         quality = 10
         assert get_new_quality_with_name("Aged Brie", quality, -1) == quality + 2
 
+    def test_conjured(self):
+        quality = 10
+        assert get_new_quality_with_name("Conjured", quality, -1) == quality - 4
+
 
 def test_brie_increases_value():
     quality = 10
@@ -99,3 +103,8 @@ class TestBackstage:
 
     def test_after_concert(self):
         assert get_new_quality_with_name(self.name, self.quality, 0) == 0
+
+
+def test_lower_quality_conjured():
+    quality = 4
+    assert get_new_quality_with_name("Conjured", quality, 10) == quality - 2
