@@ -11,7 +11,7 @@ def get_new_quality_with_name(name, old_quality, sellin):
 def get_new_sellin_with_name(name, quality, sellin):
     items = [Item(name, sellin, quality)]
     create_and_update(items)
-    return items[0].sellin
+    return items[0].sell_in
 
 
 def get_new_quality(old_quality, sellin):
@@ -72,7 +72,30 @@ def test_brie_never_beyond_50():
     assert get_new_quality_with_name("Aged Brie", quality, 2) == quality
 
 
-def test_sulfuras_never_decreases():
+def test_sulfuras_never_decreases_quality():
     quality = 80
     assert get_new_quality_with_name("Sulfuras, Hand of Ragnaros", quality, 2) == quality
 
+
+def test_sulfuras_never_decreases_sellin():
+    sellin = 10
+    assert get_new_sellin_with_name("Sulfuras, Hand of Ragnaros", 80, sellin) == sellin
+
+
+class TestBackstage:
+    name = "Backstage passes to a TAFKAL80ETC concert"
+    quality = 10
+
+    def test_always_increases_quality(self):
+        assert get_new_quality_with_name(self.name, self.quality, 15) == self.quality + 1
+
+    @pytest.mark.parametrize("sellin", [6, 8, 10])
+    def test_increase_by_2_when_10_days(self, sellin):
+        assert get_new_quality_with_name(self.name, self.quality, sellin) == self.quality + 2
+
+    @pytest.mark.parametrize("sellin", [1, 3, 5])
+    def test_increase_by_3_when_leq5_days(self, sellin):
+        assert get_new_quality_with_name(self.name, self.quality, sellin) == self.quality + 3
+
+    def test_after_concert(self):
+        assert get_new_quality_with_name(self.name, self.quality, 0) == 0
