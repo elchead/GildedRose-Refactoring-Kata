@@ -9,6 +9,12 @@ class Item:
         return "%s, %s, %s" % (self.name, self.sell_in, self.quality)
 
 
+def _base_update(item : Item, quality_inc : int):
+    item.sell_in -= 1
+    item.quality += quality_inc
+    item.quality = max(min(item.quality, 50), 0)
+
+
 class Sulfuras:
     def __init__(self, item: Item):
         self.item = item
@@ -22,12 +28,25 @@ class AgedBrie:
         self.item = item
 
     def update_quality(self):
-        self.item.sell_in -= 1
         quality_inc = 1
         if self.item.sell_in <= 0:
             quality_inc = 2
-        self.item.quality += quality_inc
-        self.item.quality = min(self.item.quality, 50)
+        _base_update(self.item, quality_inc)
+
+
+class BackstagePasses:
+    def __init__(self, item: Item):
+        self.item = item
+
+    def update_quality(self):
+        quality_inc = 1
+        if self.item.sell_in <= 10:
+            quality_inc = 2
+        if self.item.sell_in <= 5:
+            quality_inc = 3
+        if self.item.sell_in <= 0:
+            quality_inc = -self.item.quality
+        _base_update(self.item, quality_inc)
 
 
 class OtherItems:
@@ -35,7 +54,7 @@ class OtherItems:
         self.item = item
 
     def update_quality(self):
-        if self.item.name != "Aged Brie" and self.item.name != "Backstage passes to a TAFKAL80ETC concert":
+        if self.item.name != "Backstage passes to a TAFKAL80ETC concert":
             if self.item.quality > 0:
                 self.item.quality = self.item.quality - 1
         else:
@@ -50,15 +69,11 @@ class OtherItems:
                             self.item.quality = self.item.quality + 1
         self.item.sell_in = self.item.sell_in - 1
         if self.item.sell_in < 0:
-            if self.item.name != "Aged Brie":
-                if self.item.name != "Backstage passes to a TAFKAL80ETC concert":
-                    if self.item.quality > 0:
-                        self.item.quality = self.item.quality - 1
-                else:
-                    self.item.quality = self.item.quality - self.item.quality
+            if self.item.name != "Backstage passes to a TAFKAL80ETC concert":
+                if self.item.quality > 0:
+                    self.item.quality = self.item.quality - 1
             else:
-                if self.item.quality < 50:
-                    self.item.quality = self.item.quality + 1
+                self.item.quality = self.item.quality - self.item.quality
 
 
 def create_smart_item(item: Item):
@@ -66,6 +81,8 @@ def create_smart_item(item: Item):
         return Sulfuras(item)
     elif item.name == "Aged Brie":
         return AgedBrie(item)
+    elif item.name == "Backstage passes to a TAFKAL80ETC concert":
+        return BackstagePasses(item)
     else:
         return OtherItems(item)
 

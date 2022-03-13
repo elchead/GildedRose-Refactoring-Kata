@@ -64,7 +64,7 @@ class TestDegradeTwiceAsFast:
 
 def test_brie_increases_value():
     quality = 10
-    assert get_new_quality_with_name("Aged Brie", quality, 2) == quality + 1
+    assert get_new_quality_with_name("Aged Brie", quality, 1) == quality + 1
 
 
 def test_brie_never_beyond_50():
